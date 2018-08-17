@@ -1,4 +1,4 @@
-function Discover-PDK {
+function Get-PDK {
     Param(
         [Parameter(Mandatory=$True)]
         [ValidateSet("dev","prod")]
@@ -26,5 +26,5 @@ function Discover-PDK {
     "token_endpoint=$global:tokenEndpoint"
 }
 
-Export-ModuleMember -Function 'Discover-PDK'
+Export-ModuleMember -Function 'Get-PDK'
 
