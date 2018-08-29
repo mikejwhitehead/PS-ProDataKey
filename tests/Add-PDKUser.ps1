@@ -10,6 +10,8 @@ $FirstName = "Mike"
 $LastName = "Whitehead"
 
 
+$PDKUser = Add-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -FirstName $FirstName -LastName $LastName -ExpiryDate (Get-Date).AddDays(30) -Pin 1234
+
 $PDKUser = Add-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -FirstName $FirstName -LastName $LastName -Pin "4321" -ActiveDate "2018-08-20" -ExpiryDate "2018-08-25"
 $PDKUser
 # Update User (All Fields)

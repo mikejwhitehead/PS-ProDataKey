@@ -30,16 +30,16 @@ function Add-PDKUser {
         $ExpiryDate,
         # The users Pin
         [Parameter()]
-        [int]
+        [string]
         $Pin,
-        # The users duress pin (default is 9 + PIN)
-        [Parameter()]
-        [int]
-        $DuressPin="9" + $Pin,
         # Set the users partiion
         [Parameter()]
         [int]
-        $Partition=0
+        $Partition=0,
+        # Set to $false to disable PDKUser
+        [Parameter(Mandatory=$false)]
+        [bool]
+        $Enabled = $true
     )
 
     if (!$PDKPanelSession){
@@ -52,17 +52,32 @@ function Add-PDKUser {
         $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
 
-    $PDKPersonObject = @"
-{
-    "firstName": "$FirstName",
-    "lastName": "$LastName",
-    "partition": $Partition,
-    "activeDate": "$($ActiveDate.ToString("yyyy-MM-dd"))",
-    "expireDate": "$($ExpiryDate.ToString("yyyy-MM-dd"))",
-    "pin": "$Pin",
-    "duressPin": "$DuressPin"
-}
-"@
+    $PDKPersonObject = @{
+        enabled = $Enabled
+        partition = $Partition
+        firstName = $FirstName
+        lastName = $LastName
+    }
+
+    if (!$ActiveDate) {
+        $ActiveDate = Get-Date
+    }
+    if (!$ExpiryDate) {
+        $ExpiryDate = (Get-Date).AddYears(100)
+    }
+    if ($Pin) {
+        $DuressPin = "9" + "$Pin"
+        $PDKPersonObject.Add('pin',$Pin)
+        $PDKPersonObject.Add('duressPin',$DuressPin)
+    }
+
+    $ActiveDateString = $($ActiveDate.ToString("yyyy-MM-dd"))
+    $ExpiryDateString = $($ExpiryDate.ToString("yyyy-MM-dd"))
+    $PDKPersonObject.Add('activeDate',$ActiveDateString)
+    $PDKPersonObject.Add('expireDate',$ExpiryDateString)
+
+    $PDKPersonObject = $PDKPersonObject | ConvertTo-Json
+
     $PDKPersonEndpoint = "$($PDKPanelSession.uri)api/persons"
     $Headers = @{
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
