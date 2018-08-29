@@ -25,12 +25,12 @@ function Get-PDKCards {
 
     $PDKCardsObject = @()
 
-    $PDKCardsResponse = Invoke-WebRequest -Method Get -Uri $PDKCardsEndpoint -Headers $Headers -ContentType "application/json"
+    $PDKCardsResponse = Invoke-WebRequest -Method Get -Uri $PDKCardsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
     $PDKCardsNextPage = ($PDKCardsResponse.RelationLink.GetEnumerator() | Where-Object {$_.Key -eq 'next'}).Value
 
     $PDKCardsObject += ($PDKCardsResponse.Content | ConvertFrom-Json)
     while ($null -ne $PDKCardsNextPage){
-        $PDKCardsResponse = Invoke-WebRequest -Method Get -Uri $PDKCardsNextPage -Headers $Headers -ContentType "application/json"
+        $PDKCardsResponse = Invoke-WebRequest -Method Get -Uri $PDKCardsNextPage -Headers $Headers -ContentType "application/json" -UseBasicParsing
         $PDKCardsNextPage = ForEach ($Link in ($PDKCardsResponse.RelationLink.GetEnumerator() | Where-Object {$_.Key -eq 'next'})) {$Link.Value}
         $PDKCardsObject += ($PDKCardsResponse.Content | ConvertFrom-Json)
     }
@@ -71,7 +71,7 @@ function Get-PDKCard {
         "Authorization" = "Bearer $($PDKPanelSession.token)"
     }
 
-    $PDKCardsResponse = (Invoke-WebRequest -Method Get -Uri $PDKCardsEndpoint -Headers $Headers -ContentType "application/json").Content | ConvertFrom-Json
+    $PDKCardsResponse = (Invoke-WebRequest -Method Get -Uri $PDKCardsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing).Content | ConvertFrom-Json
     $PDKCardsResponse
 }
 

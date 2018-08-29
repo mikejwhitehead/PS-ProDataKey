@@ -46,7 +46,7 @@ function Get-PDKUsers {
             }
         
             $PDKPersonsObject = @()
-            $PDKPersonsResponse = Invoke-WebRequest -Method Get -Uri $PDKPersonsEndpoint -Headers $Headers -ContentType "application/json"
+            $PDKPersonsResponse = Invoke-WebRequest -Method Get -Uri $PDKPersonsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
             $PDKPersonsObjectCount = $PDKPersonsResponse.Headers.'X-Total-Count'
             $PDKPersonsObject += ($PDKPersonsResponse.Content | ConvertFrom-Json)
         
@@ -64,7 +64,7 @@ function Get-PDKUsers {
         
             while ($null -ne $PDKPersonsNextPage){
         
-                $PDKPersonsResponse = Invoke-WebRequest -Method Get -Uri $PDKPersonsNextPage -Headers $Headers -ContentType "application/json"
+                $PDKPersonsResponse = Invoke-WebRequest -Method Get -Uri $PDKPersonsNextPage -Headers $Headers -ContentType "application/json" -UseBasicParsing
                 $PDKPersonsObject += ($PDKPersonsResponse.Content | ConvertFrom-Json)
         
                 if ($PDKPersonsResponse.Headers.Link){
@@ -161,7 +161,7 @@ function Get-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonsResponse = (Invoke-WebRequest -Method Get -Uri $PDKPersonsEndpoint -Headers $Headers -ContentType "application/json").Content | ConvertFrom-Json
+    $PDKPersonsResponse = (Invoke-WebRequest -Method Get -Uri $PDKPersonsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing).Content | ConvertFrom-Json
     $PDKPersonsResponse
 }
 

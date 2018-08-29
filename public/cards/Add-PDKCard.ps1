@@ -48,7 +48,7 @@ function Add-PDKCard {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKCardObject = Invoke-WebRequest -Method Post -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKCardObject
+    $PDKCardObject = Invoke-WebRequest -Method Post -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKCardObject -UseBasicParsing
     $PDKPanelSession = $null
     Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
 }

@@ -30,12 +30,12 @@ function Get-PDKGroups {
     }
 
     $PDKGroupsObject = @()
-    $PDKGroupsResponse = Invoke-WebRequest -Method Get -Uri $PDKGroupsEndpoint -Headers $Headers -ContentType "application/json"
+    $PDKGroupsResponse = Invoke-WebRequest -Method Get -Uri $PDKGroupsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
     $PDKGroupsNextPage = ($PDKGroupsResponse.RelationLink.GetEnumerator() | Where-Object {$_.Key -eq 'next'}).Value
 
     $PDKGroupsObject += ($PDKGroupsResponse.Content | ConvertFrom-Json)
     while ($null -ne $PDKGroupsNextPage){
-        $PDKGroupsResponse = Invoke-WebRequest -Method Get -Uri $PDKGroupsNextPage -Headers $Headers -ContentType "application/json"
+        $PDKGroupsResponse = Invoke-WebRequest -Method Get -Uri $PDKGroupsNextPage -Headers $Headers -ContentType "application/json" -UseBasicParsing
         $PDKGroupsNextPage = ForEach ($Link in ($PDKGroupsResponse.RelationLink.GetEnumerator() | Where-Object {$_.Key -eq 'next'})) {$Link.Value}
         $PDKGroupsObject += ($PDKGroupsResponse.Content | ConvertFrom-Json)
     }
@@ -94,7 +94,7 @@ function Get-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKGroupsResponse = (Invoke-WebRequest -Method Get -Uri $PDKGroupsEndpoint -Headers $Headers -ContentType "application/json").Content | ConvertFrom-Json
+    $PDKGroupsResponse = (Invoke-WebRequest -Method Get -Uri $PDKGroupsEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing).Content | ConvertFrom-Json
     $PDKGroupsResponse
 }
 

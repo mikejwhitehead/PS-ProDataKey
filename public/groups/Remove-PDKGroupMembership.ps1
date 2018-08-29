@@ -40,7 +40,7 @@ function Remove-PDKGroupMembership {
             "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
         }
 
-        Invoke-WebRequest -Method Delete -Uri $PDKGroupEndpoint -Headers $Headers -ContentType "application/json" | Out-Null
+        Invoke-WebRequest -Method Delete -Uri $PDKGroupEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing | Out-Null
     }
 
     $PDKPanelSession = $null

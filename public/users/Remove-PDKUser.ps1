@@ -33,7 +33,7 @@ function Remove-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonObject = Invoke-WebRequest -Method Delete -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json"
+    $PDKPersonObject = Invoke-WebRequest -Method Delete -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
     $PDKPanelSession = $null
     $PDKPersonObject
 }

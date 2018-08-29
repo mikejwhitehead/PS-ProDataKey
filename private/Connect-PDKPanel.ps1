@@ -26,11 +26,11 @@ function Connect-PDKPanel {
     $PDKTokenEndpoint = 'https://accounts.pdk.io/oauth2/token'
 
     # Get ID and Access token from PDK
-    $PDKSession = (Invoke-WebRequest -Uri $PDKTokenEndpoint -ContentType 'application/x-www-form-urlencoded' -Headers @{Authorization = $BasicAuth} -Method Post -Body $Body).Content | ConvertFrom-Json
+    $PDKSession = (Invoke-WebRequest -Uri $PDKTokenEndpoint -ContentType 'application/x-www-form-urlencoded' -Headers @{Authorization = $BasicAuth} -Method Post -Body $Body -UseBasicParsing).Content | ConvertFrom-Json
     $PDKSession | Add-Member -MemberType NoteProperty -Name 'expires_at' -Value (Get-Date).AddSeconds($PDKSession.expires_in)
 
     # Get PDK Panel Token
-    $PDKPanelToken = (Invoke-WebRequest -Method Post -Uri "https://accounts.pdk.io/api/panels/$PDKPanelId/token" -Headers @{Authorization = "Bearer $($PDKSession.id_token)"} -ContentType 'application/x-www-form-urlencoded').Content | ConvertFrom-Json
+    $PDKPanelToken = (Invoke-WebRequest -Method Post -Uri "https://accounts.pdk.io/api/panels/$PDKPanelId/token" -Headers @{Authorization = "Bearer $($PDKSession.id_token)"} -ContentType 'application/x-www-form-urlencoded' -UseBasicParsing).Content | ConvertFrom-Json
 
     $Headers = @{
         "Authorization"="Bearer $($PDKSession.id_token)"
