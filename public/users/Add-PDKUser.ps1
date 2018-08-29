@@ -42,14 +42,14 @@ function Add-PDKUser {
         $Partition=0
     )
 
-    if (!$Global:PDKPanelSession){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
+    if (!$PDKPanelSession){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
     }
-    elseif (((Get-Date) -ge [datetime]($Global:PDKPanelSession.expires_at).AddSeconds(-5))){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
+    elseif (((Get-Date) -ge [datetime]($PDKPanelSession.expires_at).AddSeconds(-5))){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
-    elseif ($Global:PDKPanelSession.id -ne $PDKPanelId){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
+    elseif ($PDKPanelSession.id -ne $PDKPanelId){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
 
     $PDKPersonObject = @"
@@ -68,9 +68,10 @@ function Add-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonObject = (Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject).Content | ConvertFrom-Json
-    $Global:PDKPanelSession = $null
-    $PDKPersonObject
+    $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject).Content | ConvertFrom-Json).id
+    $PDKPanelSession = $null
+    Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject
+
 }
 
 Export-ModuleMember -Function 'Add-PDKUser'

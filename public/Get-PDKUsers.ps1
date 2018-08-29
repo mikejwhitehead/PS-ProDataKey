@@ -14,7 +14,11 @@ function Get-PDKUsers {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [array]
-        $PDKPanelId
+        $PDKPanelId,
+        # Switch to set for returning PDK user details
+        [Parameter(Mandatory=$false)]
+        [switch]
+        $Details
     )
 
     foreach ($Id in $PDKPanelId){
@@ -24,6 +28,7 @@ function Get-PDKUsers {
             $PDKClientId = $args[0]
             $PDKClientSecret = $args[1]
             $PDKPanelId = $args[2]
+            $Details = $args[3]
 
             if (!$PDKPanelSession){
                 $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
@@ -71,7 +76,7 @@ function Get-PDKUsers {
                     $Links += $Link
                     }
                 
-                $PDKPersonsNextPage = ($Links | ? {$_.Relation -eq 'next'}).Link
+                $PDKPersonsNextPage = ($Links | Where-Object {$_.Relation -eq 'next'}).Link
                 }
         
                 else {$PDKPersonsNextPage = $null}
@@ -84,30 +89,36 @@ function Get-PDKUsers {
                 throw "Failed to query all users from PDK panel $PDKPanelId"
         
             }
-                
-            foreach ($PDKPerson in $PDKPersonsObject){
-                $PDKPanelId = $PDKPerson.panelId
-                $PDKUserId = $PDKPerson.id
-                $PDKPersonDetails = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId | Select-Object cards,groups
-                $PDKPerson | Add-Member -MemberType NoteProperty -Name 'cards' -Value $PDKPersonDetails.cards
-                $PDKPerson | Add-Member -MemberType NoteProperty -Name 'groups' -Value $PDKPersonDetails.groups
-        
-                foreach ($PDKCard in $PDKPerson.cards){
-                    $PDKCard | Add-Member -MemberType NoteProperty -Name 'panelId' -Value $PDKPanelId
-                    $PDKCard | Add-Member -MemberType NoteProperty -Name 'panelName' -Value $PDKPerson.panelName
+
+            if ($Details){             
+    
+                foreach ($PDKPerson in $PDKPersonsObject){
+                    $PDKPanelId = $PDKPerson.panelId
+                    $PDKUserId = $PDKPerson.id
+                    $PDKPersonDetails = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId | Select-Object cards,groups
+                    $PDKPerson | Add-Member -MemberType NoteProperty -Name 'cards' -Value $PDKPersonDetails.cards
+                    $PDKPerson | Add-Member -MemberType NoteProperty -Name 'groups' -Value $PDKPersonDetails.groups
+            
+                    foreach ($PDKCard in $PDKPerson.cards){
+                        $PDKCard | Add-Member -MemberType NoteProperty -Name 'panelId' -Value $PDKPanelId
+                        $PDKCard | Add-Member -MemberType NoteProperty -Name 'panelName' -Value $PDKPerson.panelName
+                    }
                 }
+                    $PDKPersonsObject = $PDKPersonsObject | Select-Object *,@{N="fullName";E={$_.firstName + " " + $_.lastName}},@{N="email";E={$null}},@{N="employeeId";E={$null}}
             }
-        
+
             $PDKPanelSession = $null
+
             if (!$PDKPersonsObject){
                 return $null
             }
             else{
-                $PDKPersonsObject | Select-Object *,@{N="fullName";E={$_.firstName + " " + $_.lastName}},@{N="email";E={$null}},@{N="employeeId";E={$null}}
+                return $PDKPersonsObject
             }
+            
         }
             
-        Start-Job -Name "panel-$Id" -ScriptBlock $Job -ArgumentList @($PDKClientId,$PDKClientSecret,$Id) -InitializationScript {Import-Module $env:PSPDKModulePath} | Out-Null
+        Start-Job -Name "panel-$Id" -ScriptBlock $Job -ArgumentList @($PDKClientId,$PDKClientSecret,$Id,$Details) -InitializationScript {Import-Module $env:PSPDKModulePath} | Out-Null
     }
     Get-Job | Wait-Job | Out-Null
     $PDKPersonsObject = Get-Job | Receive-Job 
@@ -135,14 +146,14 @@ function Get-PDKUser {
         $PDKUserId
     )
 
-    if (!$Global:PDKPanelSession){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
+    if (!$PDKPanelSession){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
     }
-    elseif (((Get-Date) -ge [datetime]($Global:PDKPanelSession.expires_at).AddSeconds(-5))){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
+    elseif (((Get-Date) -ge [datetime]($PDKPanelSession.expires_at).AddSeconds(-5))){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
-    elseif ($Global:PDKPanelSession.id -ne $PDKPanelId){
-        $Global:PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
+    elseif ($PDKPanelSession.id -ne $PDKPanelId){
+        $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
 
     $PDKPersonsEndpoint = "$($PDKPanelSession.uri)api/persons/$($PDKUserId)"

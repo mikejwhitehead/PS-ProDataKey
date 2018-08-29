@@ -2,8 +2,8 @@
 #   Credit: https://github.com/RamblingCookieMonster/PSStackExchange
 
 #Get public and private function definition files.
-$Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
+$Public  = @( Get-ChildItem -Path $PSScriptRoot\Public -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.Extension -eq ".ps1"} )
+$Private = @( Get-ChildItem -Path $PSScriptRoot\Private -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.Extension -eq ".ps1"} )
 
 #Import additional modules
 #Import-Module ActiveDirectory
