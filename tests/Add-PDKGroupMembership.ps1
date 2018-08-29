@@ -14,3 +14,4 @@ $PDKUsers = Get-PDKUsers -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSe
 $PDKGroups = ($PDKUsers.groups | Sort-Object -Property id -Unique | Select-Object id).id
 
 Add-PDKGroupMembership -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKGroupId $PDKGroups
+Remove-PDKGroupMembership -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKGroupId $PDKGroups
