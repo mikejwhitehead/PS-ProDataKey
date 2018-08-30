@@ -33,7 +33,7 @@ Update-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKP
 Remove-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUser.id
 
 # Get User
-Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUser.id
+$users = Get-PDKUsers -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId
 
 
 

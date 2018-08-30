@@ -100,7 +100,7 @@ function Update-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonObject = Invoke-WebRequest -Method Put -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject
+    $PDKPersonObject = Invoke-WebRequest -Method Put -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject -UseBasicParsing
     $PDKPanelSession = $null
     Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
 }
