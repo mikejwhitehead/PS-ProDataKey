@@ -78,20 +78,20 @@ function Update-PDKUser {
     if (!$ExpiryDate) {
         $ExpiryDate = ($PDKUser.expireDate -as [datetime])
     }
-    if ($Pin) {
-        $DuressPin = "9" + $Pin
-        $PDKPersonObject.Add('pin',$Pin)
-        $PDKPersonObject.Add('duressPin',$DuressPin)
-        }
+    if (!$Pin) {
+        $Pin = $PDKUser.pin
+        $DuressPin = "9" + "$Pin"
+    }
 
     $ActiveDateString = $($ActiveDate.ToString("yyyy-MM-dd"))
     $ExpiryDateString = $($ExpiryDate.ToString("yyyy-MM-dd"))
+    
     $PDKPersonObject.Add('activeDate',$ActiveDateString)
     $PDKPersonObject.Add('expireDate',$ExpiryDateString)
     $PDKPersonObject.Add('firstName',$FirstName)
     $PDKPersonObject.Add('lastName',$LastName)
-    
-   
+    $PDKPersonObject.Add('pin',$Pin)
+    $PDKPersonObject.Add('duressPin',$DuressPin)
 
     $PDKPersonObject = $PDKPersonObject | ConvertTo-Json
     $PDKPersonEndpoint = "$($PDKPanelSession.uri)api/persons/$($PDKUserId)"
