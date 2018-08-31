@@ -2,5 +2,8 @@ credentials_dev.json
 credentials_test.json
 PS-ProDataKey-Workspace.code-workspace
 vim.exe.stackdump
-tests
+testing
 credentials_dev
+development
+tests
+dev
