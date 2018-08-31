@@ -43,7 +43,7 @@ function Add-PDKGroupMembership {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKGroupObject = Invoke-WebRequest -Method Put -Uri $PDKGroupEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKGroupObject
+    $PDKGroupObject = Invoke-WebRequest -Method Put -Uri $PDKGroupEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKGroupObject -UseBasicParsing
     $PDKPanelSession = $null
     Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
 }

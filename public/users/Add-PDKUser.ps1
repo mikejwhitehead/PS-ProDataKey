@@ -83,7 +83,7 @@ function Add-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject).Content | ConvertFrom-Json).id
+    $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject -UseBasicParsing).Content | ConvertFrom-Json).id
     $PDKPanelSession = $null
     Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject
 
