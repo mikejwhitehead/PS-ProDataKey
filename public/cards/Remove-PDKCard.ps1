@@ -41,8 +41,9 @@ function Remove-PDKCard {
     $Headers = @{
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
-    $Error
-    $PDKCardObject = Invoke-WebRequest -Method Delete -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing -ErrorAction SilentlyContinue
+    $ErrorActionPreference = "SilentlyContinue"
+    $PDKCardObject = Invoke-WebRequest -Method Delete -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
+    $ErrorActionPreference = "Stop"
     $PDKPanelSession = $null
     Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
 }
