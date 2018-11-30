@@ -112,7 +112,8 @@ Adding new description...
         Exit 100
     }
 
-    $VerbosePreference = $OriginalVerbosePreference
+    (Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKPanelSession $PDKPanelSession).cards
+
     Write-Output "Finished updating card"
 }
 
