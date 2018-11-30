@@ -1,4 +1,4 @@
-function Add-PDKCard {
+function Get-PDKUserGroups {
     Param(
         # Your PDK ClientId
         [Parameter(Mandatory = $true)]
@@ -15,19 +15,7 @@ function Add-PDKCard {
         # Your PDK User Id
         [Parameter(Mandatory = $true)]
         [int]
-        $PDKUserId,
-        # Your PDK Card Number
-        [Parameter(Mandatory=$true)]
-        [int]
-        $PDKCardNumber,
-        # A description for your PDK Card
-        [Parameter(Mandatory=$true)]
-        [string]
-        $PDKCardDescription,
-        # A PDK Panel Web Session Object
-        [Parameter(Mandatory = $false)]
-        [psobject]
-        $PDKPanelSession
+        $PDKUserId
     )
 
     if (!$PDKPanelSession){
@@ -40,20 +28,13 @@ function Add-PDKCard {
         $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
 
-    $PDKCardObject = @{
-        cardNumber = $PDKCardNumber
-        description = $PDKCardDescription
-    }
-
-    $PDKCardObject = $PDKCardObject | ConvertTo-Json
-    $PDKCardEndpoint = "$($PDKPanelSession.uri)api/persons/$($PDKUserId)/cards"
-    
+    $PDKPersonsGroupsEndpoint = "$($PDKPanelSession.uri)api/persons/$($PDKUserId)/groups"
     $Headers = @{
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKCardObject = Invoke-WebRequest -Method Post -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKCardObject -UseBasicParsing
-    Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKPanelSession $PDKPanelSession
+    $PDKPersonsGroupsResponse = Invoke-RestMethod -Method Get -Uri $PDKPersonsGroupsEndpoint -Headers $Headers -ContentType "application/json"
+    $PDKPersonsGroupsResponse
 }
 
-Export-ModuleMember -Function 'Add-PDKCard'
+Export-ModuleMember -Function 'Get-PDKUserGroups'

@@ -19,7 +19,11 @@ function Remove-PDKCard {
         # Your PDK Card Number
         [Parameter(Mandatory=$true)]
         [int]
-        $PDKCardNumber
+        $PDKCardNumber,
+        # A PDK Panel Web Session Object
+        [Parameter(Mandatory = $false)]
+        [psobject]
+        $PDKPanelSession
     )
 
     if (!$PDKPanelSession){
@@ -32,7 +36,7 @@ function Remove-PDKCard {
         $PDKPanelSession = Connect-PDKPanel -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId        
     }
 
-    $PDKUser = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
+    $PDKUser = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKPanelSession $PDKPanelSession
     $PDKCardId = ($PDKUser.cards | Where-Object {$_.cardNumber -eq $PDKCardNumber}).id
 
     $PDKCardObject = $PDKCardObject | ConvertTo-Json
@@ -45,7 +49,7 @@ function Remove-PDKCard {
     $PDKCardObject = Invoke-WebRequest -Method Delete -Uri $PDKCardEndpoint -Headers $Headers -ContentType "application/json" -UseBasicParsing
     $ErrorActionPreference = "Stop"
     $PDKPanelSession = $null
-    Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId
+    Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKUserId -PDKPanelSession $PDKPanelSession
 }
 
 Export-ModuleMember -Function 'Remove-PDKCard'
