@@ -1,21 +1,22 @@
-function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,[string[]]$CardNumber,$EmployeeID,$Enabled){
-    $Cards = @()
-    foreach ($Card in $CardNumber){
+function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Cards,$EmployeeID,$Enabled){
+    $CardsObject = @()
+    foreach ($Card in $Cards){
         $CardProps = @{
             panelId=$PanelId
             panelName=$PanelName
-            id=$Id
+            id=$Id.ToString()
             firstName=$FirstName
             lastName=$LastName
-            cardNumber=$Card
+            cardNumber=$Card.cardNumber
+            cardDescription=$Card.description
             employeeId=$EmployeeID
             enabled=$Enabled
         }
 
-        $Cards += New-Object psobject  -Property $CardProps
+        $CardsObject += New-Object psobject  -Property $CardProps
     }
 
-    return $Cards
+    return $CardsObject
 }
 
 
