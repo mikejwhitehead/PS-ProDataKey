@@ -1,4 +1,4 @@
-function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Cards,$EmployeeID,$Enabled){
+function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Cards,$EmployeeID,$EmployeeStatus,$Enabled){
     $CardsObject = @()
     foreach ($Card in $Cards){
         $CardProps = @{
@@ -10,6 +10,7 @@ function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Cards,
             cardNumber=$Card.cardNumber
             cardDescription=$Card.description
             employeeId=$EmployeeID
+            employeeStatus=$EmployeeStatus
             enabled=$Enabled
         }
 
@@ -20,7 +21,7 @@ function New-PDKCardObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Cards,
 }
 
 
-function New-PDKGroupObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Groups,$EmployeeID,$Enabled){
+function New-PDKGroupObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Groups,$EmployeeID,$EmployeeStatus,$Enabled){
 
     $GroupProps = @{
         panelId=$PanelId
@@ -31,6 +32,7 @@ function New-PDKGroupObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Group
         groupId=$Groups.id -join ','
         groupName=$Groups.name -join ','
         employeeId=$EmployeeID
+        employeeStatus=$EmployeeStatus
         enabled=$Enabled
     }
 
@@ -39,4 +41,4 @@ function New-PDKGroupObject ($PanelId,$PanelName,$Id,$FirstName,$LastName,$Group
     return $GroupsObject
 }
 
-#Export-ModuleMember -Function 'New-PDKGroupObject','New-PDKCardObject'
+Export-ModuleMember -Function 'New-PDKGroupObject','New-PDKCardObject'
