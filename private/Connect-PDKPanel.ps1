@@ -45,4 +45,4 @@ function Connect-PDKPanel {
     $PDKSession
 }
 
-#Export-ModuleMember -Function 'Connect-PDKPanel'
+Export-ModuleMember -Function 'Connect-PDKPanel'
