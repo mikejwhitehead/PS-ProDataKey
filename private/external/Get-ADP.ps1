@@ -1,8 +1,9 @@
-function Get-ADP ($EmployeeId) {
+function Get-ADP ([System.IO.FileInfo]$DataSource,$EmployeeId) {
 
     if (!$global:ADP){
 
-        $global:ADP = Import-Csv C:\DataSources\NCHS_RES_Automation.csv
+        $global:ADP = Import-Csv $DataSource.FullName
+        
     }
     
     if ($EmployeeId){
