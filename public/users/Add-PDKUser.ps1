@@ -83,10 +83,28 @@ function Add-PDKUser {
         "Authorization" = "Bearer $($PDKPanelSession.panel_token)"
     }
 
-    $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject -UseBasicParsing).Content | ConvertFrom-Json).id
-    $PDKPanelSession = $null
-    Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject
+    Try{
+        $OriginalErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'SilentlyContinue'
+        $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject -UseBasicParsing -ErrorVariable PDKResponseError).Content | ConvertFrom-Json).id
+        $PDKPersonObject = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject -PDKPanelSession $PDKPanelSession
+    } Catch {
+        if ($PDKResponseError -like "*The entity already exists.*") {
+            $PDKPersonObject = (Get-PDKUsers -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelSession $PDKPanelSession -PDKPanelId $PDKPanelId | Where-Object {$_.firstName -eq $FirstName -and $_.lastName -eq $LastName}).id
 
+            if ($PDKPersonObject.Count -gt 1) {
+                Write-ErrorMessage -errorMessage "Cannot make a unique match on entity"
+            } elseif ($PDKPersonObject.Count -eq 1) {
+                $PDKPersonObject = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject -PDKPanelSession $PDKPanelSession
+            } else {
+                Write-ErrorMessage -errorMessage "Cannot make a unique match on entity"
+            }
+        } else {
+            Write-ErrorMessag -errorMessage $PDKResponseError
+        }
+    }
+
+    return $PDKPersonObject
 }
 
 Export-ModuleMember -Function 'Add-PDKUser'
