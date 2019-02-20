@@ -85,7 +85,7 @@ function Add-PDKUser {
 
     Try{
         $OriginalErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = 'SilentlyContinue'
+        $ErrorActionPreference = 'Stop'
         $PDKPersonObject = ((Invoke-WebRequest -Method Post -Uri $PDKPersonEndpoint -Headers $Headers -ContentType "application/json" -Body $PDKPersonObject -UseBasicParsing -ErrorVariable PDKResponseError).Content | ConvertFrom-Json).id
         $PDKPersonObject = Get-PDKUser -PDKClientId $PDKClientId -PDKClientSecret $PDKClientSecret -PDKPanelId $PDKPanelId -PDKUserId $PDKPersonObject -PDKPanelSession $PDKPanelSession
     } Catch {
@@ -100,7 +100,7 @@ function Add-PDKUser {
                 Write-ErrorMessage -errorMessage "Cannot make a unique match on entity"
             }
         } else {
-            Write-ErrorMessag -errorMessage $PDKResponseError
+            Write-ErrorMessage -errorMessage $PDKResponseError
         }
     }
 
