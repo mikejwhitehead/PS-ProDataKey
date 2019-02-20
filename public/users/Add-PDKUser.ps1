@@ -99,6 +99,8 @@ function Add-PDKUser {
             } else {
                 Write-ErrorMessage -errorMessage "Cannot make a unique match on entity"
             }
+        } elseif ($PDKResponseError -like "*PIN must be unique*") {
+            Write-ErrorMessage -errorMessage $PDKResponseError
         } else {
             Write-ErrorMessage -errorMessage $PDKResponseError
         }
